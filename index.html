@@ -293,7 +293,7 @@ textarea{resize:vertical;min-height:64px}
 .mini-tot{font-family:var(--f-disp);font-size:1.3rem;color:var(--gold2);text-align:right;letter-spacing:.04em}
 
 /* ── QUOTE BAR ──────────────────────────────────────── */
-.quote-bar{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 24px;text-align:center;font-family:var(--f-ui);font-size:12px;font-style:italic;letter-spacing:.03em;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:10px}
+.quote-bar{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 24px;text-align:center;font-family:var(--f-ui);font-size:12px;font-style:italic;letter-spacing:.03em;color:var(--text);display:flex;align-items:center;justify-content:center;gap:10px}
 .quote-bar b{color:var(--text2);font-style:normal}
 .qm{color:var(--red);font-size:14px;font-style:normal}
 
@@ -312,8 +312,8 @@ textarea{resize:vertical;min-height:64px}
 /* ── RESPONSIVE ──────────────────────────────────────── */
 @media(max-width:700px){
   .hero-title{font-size:clamp(3rem,13vw,5rem)}
-  .hero-img{width:100%;opacity:.25;mask-image:none;-webkit-mask-image:none}
-  .hero-overlay{background:rgba(5,0,0,.85)}
+  .hero-img{width:100%;opacity:.55;mask-image:linear-gradient(to left,rgba(0,0,0,.85) 20%,rgba(0,0,0,.3) 60%,transparent 100%);-webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.85) 20%,rgba(0,0,0,.3) 60%,transparent 100%)}
+  .hero-overlay{background:linear-gradient(to right,rgba(5,0,0,.92) 25%,rgba(5,0,0,.4) 65%,transparent 100%)}
   .hero-pills{gap:8px}
   .hero-pill{padding:8px 14px}
   .stand-meta{grid-template-columns:1fr 1fr}
