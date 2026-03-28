@@ -609,7 +609,7 @@ function renderPlayerLeaders(){
   tbody.innerHTML='';
   players.slice(0,10).forEach((p,i)=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="pnum">${i+1}</td><td><div class="pnm">${esc(p.name)}</div><div class="pft">${esc(p.fantasy_team||'')}</div><div class="psub">${esc(p.mlb_team||'')} · <span class="ppos">${esc(p.position||'—')}</span></div></td><td class="pst">${Math.round(p[sk]||0)}</td>`;
+    tr.innerHTML=`<td class="pnum">${i+1}</td><td><div class="pnm">${esc(p.name)}</div><div class="pft">${esc(p.fantasy_team||'')}</div><div class="psub">${esc(p.mlb_team||'')}</div></td><td class="pst">${Math.round(p[sk]||0)}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -781,7 +781,7 @@ function renderAdminGrid(){
     const td=teamData.find(t=>t.team_name===name)||{};
     const cur=Math.round(td[key]||0);
     const d=document.createElement('div');d.className='adm-item';
-    d.innerHTML=`<span class="an">${esc(name)}</span><span class="ac">now: ${cur}</span><input type="number" min="0" placeholder="override" data-team="${esc(name)}" style="width:90px"/>`;
+    d.innerHTML=`<span class="an">${esc(name)}</span><input type="date" data-team-date="${esc(name)}" value="${new Date().toISOString().slice(0,10)}" style="width:130px;font-size:11px"/><input type="number" min="0" placeholder="value" data-team="${esc(name)}" style="width:80px"/>`;
     el.appendChild(d);
   });
 }
@@ -793,7 +793,9 @@ async function saveManualStats(){
   let count=0;
   for(const inp of inputs){
     if(!inp.value)continue;const val=parseInt(inp.value);if(isNaN(val)||val<0)continue;
-    try{await fetch(`${API}/api/sync-now`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret,team_override:{team:inp.dataset.team,stat:key,value:val}})});count++;}catch{}
+    const dateInp = document.querySelector(`input[data-team-date="${inp.dataset.team}"]`);
+    const score_date = dateInp ? dateInp.value : new Date().toISOString().slice(0,10);
+    try{await fetch(`${API}/api/sync-now`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret,team_override:{team:inp.dataset.team,stat:key,value:val,score_date}})});count++;}catch{}
   }
   if(!count)return showAdminAlert('No values entered.','err');
   showAdminAlert(count+' overrides saved.','ok');
