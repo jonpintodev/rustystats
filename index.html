@@ -150,10 +150,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .tn{font-family:var(--f-ui);font-size:14px;font-weight:700;letter-spacing:.02em;color:var(--text)}
 .bar-wrap{width:100px}
 .bar-bg{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
-.bar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--red2));border-radius:2px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.bar-fill{height:100%;background:var(--red);border-radius:2px;transition:width .7s cubic-bezier(.4,0,.2,1),background .7s}
 .tot{font-family:var(--f-disp);font-size:1.4rem;text-align:right;letter-spacing:.04em}
 .tot.big{font-size:1.8rem;color:var(--gold2)}
 .gap{font-family:var(--f-ui);font-size:11px;text-align:right;color:var(--text3)}
+.move{font-family:var(--f-ui);font-size:11px;font-weight:700;white-space:nowrap}
+.move.up{color:#00d96f}.move.dn{color:var(--red2)}.move.nc{color:var(--text3)}
 .gap.behind{color:var(--red2)}
 .mt{margin-top:16px}
 .empty{text-align:center;padding:36px;color:var(--text3);font-style:italic;font-size:13px}
@@ -418,7 +420,33 @@ textarea{resize:vertical;min-height:64px}
       </table>
       <div style="padding:7px 14px;border-top:1px solid var(--line);background:var(--bg3);display:flex;align-items:center;gap:6px">
         <div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite;flex-shrink:0"></div>
-        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Powered by SeanBot v1.0</span>
+        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Powered by SeanBot v1.1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAILY RACE RECAP -->
+  <div class="widget" id="recap-card" style="display:none">
+    <div class="widget-head">
+      <span class="wh-title">📊 Race Recap</span>
+      <span class="badge b-dim" id="recap-date">Today</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)">
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-leader-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Current Leader</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--gold2)" id="recap-leader">—</div>
+      </div>
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-gain-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Biggest Gain Today</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--green)" id="recap-gain">—</div>
+      </div>
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-chase-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Closest Chase</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--text)" id="recap-chase">—</div>
+      </div>
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-drop-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Biggest Drop Today</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--red2)" id="recap-drop">—</div>
       </div>
     </div>
   </div>
@@ -508,6 +536,24 @@ textarea{resize:vertical;min-height:64px}
     <div class="cd-unit" id="cd-unit">Days</div>
     <div class="cd-cat" id="cd-cat">RBI</div>
     <div class="cd-period" id="cd-period">March / April</div>
+    <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px;display:flex;flex-direction:column;gap:7px" id="prize-urgency">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3)">Leader</span>
+        <span style="font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--gold2)" id="urg-leader">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3)">Pace (per day)</span>
+        <span style="font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--text)" id="urg-pace">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3)">Gap to 1st</span>
+        <span style="font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--red2)" id="urg-gap">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3)">If ended today</span>
+        <span style="font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--green)" id="urg-winner">—</span>
+      </div>
+    </div>
   </div>
 
   <!-- RUSTY -->
@@ -630,7 +676,7 @@ textarea{resize:vertical;min-height:64px}
 <footer class="site-footer">
   <strong>The Rusty Kuntz Dynasty League</strong> · Est. 2021 · Dynasty Baseball · 14 Teams<br/>
   Named in honor of Russell Jay Kuntz — World Series Champion, Baseball Lifer, Greatest Name in the Game<br/>
-  MLB stats live from MLB.com · Fantrax standings entered nightly by the commissioner<br/><span style="opacity:.5">Powered by SeanBot 1.0</span><br/><span style="color:var(--text3);font-size:10px;letter-spacing:.06em;opacity:.6">⚙ Powered by <strong style="color:var(--gold);font-style:normal">SeanBot v1.0</strong></span>
+  MLB stats live from MLB.com · Fantrax standings entered nightly by the commissioner<br/><span style="opacity:.5">Powered by SeanBot v1.1</span><br/><span style="color:var(--text3);font-size:10px;letter-spacing:.06em;opacity:.6">⚙ Powered by <strong style="color:var(--gold);font-style:normal">SeanBot v1.1</strong></span>
 </footer>
 
 <script>
@@ -715,6 +761,9 @@ function selCat(idx,btn){
   document.getElementById('cat-badge').textContent=cat.name;
   document.getElementById('sm-period').textContent=cat.period;
   renderCountdown();
+  prevStandings=[];
+  yesterdayData={};
+  loadYesterday();
   if(viewMode==='monthly') loadStandings();
   else loadDayLB();
 }
@@ -749,26 +798,71 @@ async function loadDayLB(){
   catch{renderLB([]);}
 }
 
+// SeanBot v1.1 — previous standings snapshot for movement arrows
+let prevStandings = [];
+
+function barColor(pct) {
+  // pct 0-100: red → amber → orange → yellow → green
+  if (pct >= 90) return '#00d96f';
+  if (pct >= 70) return '#aacc00';
+  if (pct >= 50) return '#f5b800';
+  if (pct >= 30) return '#f07800';
+  return '#c8102e';
+}
+
 function renderLB(rows){
   const tbody=document.getElementById('lb-body');
   const cat=CATS[catIdx];
   if(!cat.stat){tbody.innerHTML='<tr><td colspan="5" class="empty">September — single-day high score, manually tracked</td></tr>';updateHero([]);return;}
   if(!rows||rows.every(r=>r.total===0)){tbody.innerHTML='<tr><td colspan="5" class="empty">No data yet — commissioner enters stats nightly</td></tr>';updateHero([]);return;}
+
   const max=Math.max(1,...rows.map(r=>r.total));
+  const min=Math.min(...rows.map(r=>r.total));
+  const range=Math.max(1,max-min);
+
   document.getElementById('sm-leader').textContent=rows[0].team_name;
   document.getElementById('sm-total').textContent=rows[0].total;
+
+  // Build rank lookup from previous snapshot
+  const prevRank = {};
+  prevStandings.forEach((r,i)=>{ prevRank[r.team_name]=i+1; });
+
   tbody.innerHTML='';
   rows.forEach((r,i)=>{
-    const rank=i+1,rc=rank===1?'rk1':rank===2?'rk2':rank===3?'rk3':'rkx';
+    const rank=i+1;
+    const rc=rank===1?'rk1':rank===2?'rk2':rank===3?'rk3':'rkx';
     const rl=rank===1?'1st':rank===2?'2nd':rank===3?'3rd':rank+'th';
     const pct=Math.round((r.total/max)*100);
+    const colorPct=Math.round(((r.total-min)/range)*100);
+    const color=barColor(colorPct);
     const gap=rows[0].total-r.total;
+
+    // Movement arrow
+    let moveHtml='';
+    if(prevRank[r.team_name]!==undefined){
+      const prev=prevRank[r.team_name];
+      const diff=prev-rank; // positive = moved up
+      if(diff>0) moveHtml=`<span class="move up">↑${diff}</span>`;
+      else if(diff<0) moveHtml=`<span class="move dn">↓${Math.abs(diff)}</span>`;
+      else moveHtml=`<span class="move nc">—</span>`;
+    }
+
     const tr=document.createElement('tr');
     if(rank===1)tr.className='first';
-    tr.innerHTML=`<td><span class="rk ${rc}">${rl}</span></td><td><span class="tn">${esc(r.team_name)}</span></td><td class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></td><td class="tot${rank===1?' big':''}">${r.total}</td><td class="gap${gap>0?' behind':''}">${gap===0?'—':'+'+gap}</td>`;
+    tr.innerHTML=`<td><span class="rk ${rc}">${rl}</span></td>
+      <td><span class="tn">${esc(r.team_name)}</span>${moveHtml}</td>
+      <td class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div></td>
+      <td class="tot${rank===1?' big':''}">${r.total}</td>
+      <td class="gap${gap>0?' behind':''}">${gap===0?'—':'+'+gap}</td>`;
     tbody.appendChild(tr);
   });
+
+  // Save snapshot for next render (movement arrows)
+  prevStandings = rows.map(r=>({team_name:r.team_name,total:r.total}));
+
   updateHero(rows);
+  updatePrizeUrgency(rows);
+  updateRecap(rows);
 }
 
 function updateHero(rows){
@@ -1010,11 +1104,94 @@ function showAdmAlert(msg,type){
   clearTimeout(window._at);window._at=setTimeout(()=>el.style.display='none',5000);
 }
 
+// ── PRIZE URGENCY (v1.1) ─────────────────────────────────────────────────────
+function updatePrizeUrgency(rows){
+  if(!rows||rows.every(r=>r.total===0)){
+    document.getElementById('prize-urgency').style.display='none'; return;
+  }
+  document.getElementById('prize-urgency').style.display='flex';
+  const cat=CATS[catIdx];
+  const leader=rows[0];
+  const second=rows[1];
+
+  document.getElementById('urg-leader').textContent=leader.team_name;
+  document.getElementById('urg-winner').textContent=leader.team_name;
+
+  // Gap to first (from 2nd place perspective)
+  if(second){
+    const g=leader.total-second.total;
+    document.getElementById('urg-gap').textContent=g===0?'Tied':'+'+g+' behind';
+  } else {
+    document.getElementById('urg-gap').textContent='—';
+  }
+
+  // Pace: leader total / days elapsed in period
+  const now=new Date();
+  const periodStart=new Date(now.getFullYear(),cat.sm-1,1);
+  const daysElapsed=Math.max(1,Math.ceil((now-periodStart)/86400000));
+  const pace=(leader.total/daysElapsed).toFixed(1);
+  document.getElementById('urg-pace').textContent=pace+' / day';
+}
+
+// ── DAILY RACE RECAP (v1.1) ───────────────────────────────────────────────────
+let yesterdayData = {};
+
+async function loadYesterday(){
+  const cat=CATS[catIdx];
+  if(!cat.stat) return;
+  const d=new Date(); d.setDate(d.getDate()-1);
+  const iso=d.toISOString().slice(0,10);
+  try{
+    const r=await fetch(`${API}/api/daily?stat=${cat.stat}&score_date=${iso}`);
+    const j=await r.json();
+    yesterdayData={};
+    (j.data||[]).forEach(row=>{ yesterdayData[row.team_name]=row.total; });
+  } catch { yesterdayData={}; }
+}
+
+function updateRecap(rows){
+  if(!rows||rows.every(r=>r.total===0)){
+    document.getElementById('recap-card').style.display='none'; return;
+  }
+
+  const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('recap-date').textContent=today;
+  document.getElementById('recap-leader').textContent=rows[0].team_name+' ('+rows[0].total+')';
+
+  // Closest chase (2nd place gap)
+  if(rows[1]){
+    const g=rows[0].total-rows[1].total;
+    document.getElementById('recap-chase').textContent=rows[1].team_name+(g===0?' (tied)':' (−'+g+')');
+  } else {
+    document.getElementById('recap-chase-box').style.display='none';
+  }
+
+  // Biggest gain / drop vs yesterday
+  if(Object.keys(yesterdayData).length){
+    let maxGain={team:'',delta:-Infinity}, maxDrop={team:'',delta:Infinity};
+    rows.forEach(r=>{
+      const prev=yesterdayData[r.team_name]||0;
+      const delta=r.total-prev;
+      if(delta>maxGain.delta){maxGain={team:r.team_name,delta};}
+      if(delta<maxDrop.delta){maxDrop={team:r.team_name,delta};}
+    });
+    if(maxGain.delta>0) document.getElementById('recap-gain').textContent=maxGain.team+' (+'+maxGain.delta+')';
+    else document.getElementById('recap-gain-box').style.display='none';
+    if(maxDrop.delta<0) document.getElementById('recap-drop').textContent=maxDrop.team+' ('+maxDrop.delta+')';
+    else document.getElementById('recap-drop-box').style.display='none';
+  } else {
+    document.getElementById('recap-gain-box').style.display='none';
+    document.getElementById('recap-drop-box').style.display='none';
+  }
+
+  document.getElementById('recap-card').style.display='block';
+}
+
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 checkAdmin();renderCountdown();
-loadStandings();loadScores();loadNews();loadChirps();loadStatus();
+loadStandings();loadScores();loadNews();loadChirps();loadStatus();loadYesterday();
 fetchLeaders('homeRuns','Home Runs',document.querySelector('.ltab'));
 
 setInterval(loadScores,       5*60*1000);
