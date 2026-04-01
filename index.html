@@ -418,13 +418,39 @@ textarea{resize:vertical;min-height:64px}
       </table>
       <div style="padding:7px 14px;border-top:1px solid var(--line);background:var(--bg3);display:flex;align-items:center;gap:6px">
         <div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite;flex-shrink:0"></div>
-        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Powered by SeanBot v1.0</span>
+        <span style="font-family:var(--f-ui);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Powered by SeanBot v1.1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RACE RECAP -->
+  <div class="widget" id="recap-card" style="display:none;margin-bottom:20px">
+    <div class="widget-head">
+      <span class="wh-title">&#128202; Daily Race Recap</span>
+      <span class="badge b-dim" id="recap-date">Today</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)">
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-leader-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Current Leader</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--gold2)" id="recap-leader">&#8212;</div>
+      </div>
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-chase-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Closest Chase</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--text)" id="recap-chase">&#8212;</div>
+      </div>
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-gain-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Biggest Gain Today</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:#22c55e" id="recap-gain">&#8212;</div>
+      </div>
+      <div style="background:var(--bg2);padding:12px 14px" id="recap-drop-box">
+        <div style="font-family:var(--f-ui);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Biggest Drop Today</div>
+        <div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:#e11d48" id="recap-drop">&#8212;</div>
       </div>
     </div>
   </div>
 
   <!-- MLB SCORES -->
-  <div class="sec mt"><span class="sec-accent">▌</span>Today's MLB Games</div>
+  <div class="sec mt"><span class="sec-accent">&#9612;</span>Today's MLB Games</div>
   <div class="widget">
     <div class="widget-head">
       <span class="wh-title" id="scores-head">MLB Scoreboard</span>
@@ -630,7 +656,7 @@ textarea{resize:vertical;min-height:64px}
 <footer class="site-footer">
   <strong>The Rusty Kuntz Dynasty League</strong> · Est. 2021 · Dynasty Baseball · 14 Teams<br/>
   Named in honor of Russell Jay Kuntz — World Series Champion, Baseball Lifer, Greatest Name in the Game<br/>
-  MLB stats live from MLB.com · Fantrax standings entered nightly by the commissioner<br/><span style="opacity:.5">Powered by SeanBot 1.0</span><br/><span style="color:var(--text3);font-size:10px;letter-spacing:.06em;opacity:.6">⚙ Powered by <strong style="color:var(--gold);font-style:normal">SeanBot v1.0</strong></span>
+  MLB stats live from MLB.com · Fantrax standings entered nightly by the commissioner<br/><span style="opacity:.5">Powered by SeanBot v1.1</span><br/><span style="color:var(--text3);font-size:10px;letter-spacing:.06em;opacity:.6">⚙ Powered by <strong style="color:var(--gold);font-style:normal">SeanBot v1.1</strong></span>
 </footer>
 
 <script>
@@ -716,7 +742,6 @@ function selCat(idx,btn){
   document.getElementById('cat-badge').textContent=cat.name;
   document.getElementById('sm-period').textContent=cat.period;
   renderCountdown();
-  prevStandings=[];
   if(viewMode==='monthly') loadStandings();
   else loadDayLB();
 }
@@ -738,7 +763,7 @@ function setView(v,btn){
 async function loadStandings(){
   const cat=CATS[catIdx];
   if(!cat.stat){standingsData=[];renderLB([]);return;}
-  const month=new Date().toISOString().slice(0,7);
+  const month=new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'}).slice(0,7);
   try{const r=await fetch(`${API}/api/standings?stat=${cat.stat}&month=${month}`);const j=await r.json();standingsData=j.data||[];}
   catch{standingsData=[];}
   renderLB(standingsData);
@@ -761,7 +786,6 @@ function renderLB(rows){
   document.getElementById('sm-leader').textContent=rows[0].team_name;
   document.getElementById('sm-total').textContent=rows[0].total;
 
-  // Color bar: normalize each team's total between min and max
   function barColor(total){
     if(max===min) return '#6b7280';
     const n=(total-min)/(max-min);
@@ -772,7 +796,6 @@ function renderLB(rows){
     return '#e11d48';
   }
 
-  // Movement arrows: compare to previous snapshot
   const prevRank={};
   prevStandings.forEach((r,i)=>{ prevRank[r.team_name]=i+1; });
 
@@ -796,10 +819,10 @@ function renderLB(rows){
     tbody.appendChild(tr);
   });
 
-  // Save snapshot for next render
   prevStandings=rows.map(r=>({team_name:r.team_name,total:r.total}));
 
   updateHero(rows);
+  updateRecap(rows);
 }
 
 function updateHero(rows){
@@ -998,7 +1021,7 @@ async function saveDay(){
 
 async function loadAdmStandings(preloaded){
   const stat=document.getElementById('adm-stat').value;
-  const month=new Date().toISOString().slice(0,7);
+  const month=new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'}).slice(0,7);
   document.getElementById('adm-lb-title').textContent=stat.replace(/_/g,' ').toUpperCase()+' Standings';
   let rows=preloaded;
   if(!rows){try{const r=await fetch(`${API}/api/standings?stat=${stat}&month=${month}`);const j=await r.json();rows=j.data||[];}catch{rows=[];}}
@@ -1041,11 +1064,61 @@ function showAdmAlert(msg,type){
   clearTimeout(window._at);window._at=setTimeout(()=>el.style.display='none',5000);
 }
 
+// ── DAILY RACE RECAP ─────────────────────────────────────────────────────────
+let yesterdayData = {};
+
+async function loadYesterday(){
+  const cat=CATS[catIdx];
+  if(!cat.stat) return;
+  const d=new Date();
+  d.setDate(d.getDate()-1);
+  const iso=d.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
+  try{
+    const r=await fetch(`${API}/api/daily?stat=${cat.stat}&score_date=${iso}`);
+    const j=await r.json();
+    yesterdayData={};
+    (j.data||[]).forEach(row=>{ yesterdayData[row.team_name]=row.total; });
+  } catch { yesterdayData={}; }
+}
+
+function updateRecap(rows){
+  if(!rows||rows.every(r=>r.total===0)){
+    document.getElementById('recap-card').style.display='none'; return;
+  }
+  const today=new Date().toLocaleDateString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'});
+  document.getElementById('recap-date').textContent=today;
+  document.getElementById('recap-leader').textContent=rows[0].team_name+' ('+rows[0].total+')';
+  if(rows[1]){
+    const g=rows[0].total-rows[1].total;
+    document.getElementById('recap-chase').textContent=rows[1].team_name+(g===0?' (tied)':' −'+g);
+    document.getElementById('recap-chase-box').style.display='';
+  } else {
+    document.getElementById('recap-chase-box').style.display='none';
+  }
+  if(Object.keys(yesterdayData).length){
+    let maxGain={team:'',delta:-Infinity},maxDrop={team:'',delta:Infinity};
+    rows.forEach(r=>{
+      const prev=yesterdayData[r.team_name]||0;
+      const delta=r.total-prev;
+      if(delta>maxGain.delta) maxGain={team:r.team_name,delta};
+      if(delta<maxDrop.delta) maxDrop={team:r.team_name,delta};
+    });
+    if(maxGain.delta>0){document.getElementById('recap-gain').textContent=maxGain.team+' (+'+maxGain.delta+')';document.getElementById('recap-gain-box').style.display='';}
+    else document.getElementById('recap-gain-box').style.display='none';
+    if(maxDrop.delta<0){document.getElementById('recap-drop').textContent=maxDrop.team+' ('+maxDrop.delta+')';document.getElementById('recap-drop-box').style.display='';}
+    else document.getElementById('recap-drop-box').style.display='none';
+  } else {
+    document.getElementById('recap-gain-box').style.display='none';
+    document.getElementById('recap-drop-box').style.display='none';
+  }
+  document.getElementById('recap-card').style.display='block';
+}
+
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 checkAdmin();renderCountdown();
-loadStandings();loadScores();loadNews();loadChirps();loadStatus();
+loadStandings();loadScores();loadNews();loadChirps();loadStatus();loadYesterday();
 fetchLeaders('homeRuns','Home Runs',document.querySelector('.ltab'));
 
 setInterval(loadScores,       5*60*1000);
